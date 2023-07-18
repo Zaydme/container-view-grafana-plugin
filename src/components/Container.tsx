@@ -1,6 +1,6 @@
 import React from 'react';
 import { PanelProps } from '@grafana/data';
-import { PluginOptions, ContainerConfig } from 'types';
+import { PluginOptions, ContainerConfig, ProductData } from 'types';
 import { css, cx } from '@emotion/css';
 import { Grid } from './Grid';
 
@@ -31,13 +31,14 @@ export const Container: React.FC<Props> = ({ options, data, width, height }) => 
   // productData = {Key: Array(42), Value: Array(42), Text: Array(42), X: Array(42), Y: Array(42)}
   // map them in a single array and we will use X and Y as indexes
 
-  const productData2D = productData.X.map((x: number, i: number) => {
+  const productData2D: ProductData[] = productData.X.map((x: number, i: number) => {
     return {
       Key: productData.Key[i],
       Value: productData.Value[i],
       Text: productData.Text[i],
       X: x,
       Y: productData.Y[i],
+      Rotate: productData.Rotate[i],
     };
   });
 
@@ -50,6 +51,7 @@ export const Container: React.FC<Props> = ({ options, data, width, height }) => 
         css`
           width: 100%;
           height: 100%;
+          padding-right: 0.5rem;
         `
       )}
     >

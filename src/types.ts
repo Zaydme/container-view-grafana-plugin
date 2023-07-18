@@ -1,4 +1,6 @@
 type Order = 'ASC' | 'DESC';
+type Rotation = '0' | '90' | '180' | '270';
+
 export type Threshold = {
   color: string;
   value: number;
@@ -25,4 +27,5 @@ export interface ProductData {
   Value: number;
   X: number;
   Y: number;
+  Rotate: Rotation;
 }

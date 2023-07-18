@@ -19,11 +19,11 @@ export const Grid: React.FC<{
       <div
         className={css`
           display: grid;
-          grid-template-columns: repeat(${GridColumns + 1}, ${ParentWidth / (GridColumns + 1)}px);
-          grid-template-rows: repeat(${GridRows + 1}, ${ParentHeight / (GridRows + 1)}px);
+          grid-template-columns: repeat(${GridColumns + 1}, ${(ParentWidth - 15) / (GridColumns + 1)}px);
+          grid-template-rows: repeat(${GridRows + 1}, ${(ParentHeight - 15) / (GridRows + 1)}px);
           justify-items: center;
           align-items: center;
-          width: 100%;
+          width: calc(100% - 15px);
           max-height: 100%;
         `}
       >
@@ -56,8 +56,9 @@ export const Grid: React.FC<{
               <>
                 {i === GridRows ? (
                   <GridElement
+                    forceShift
                     Text={
-                      <span>
+                      <div>
                         <span
                           className={css`
                             font-weight: bold;
@@ -66,54 +67,48 @@ export const Grid: React.FC<{
                           X
                         </span>
                         <sub>{OrderX === 'ASC' ? j + 1 : GridColumns - j}</sub>
-                      </span>
+
+                        <span
+                          className={css`
+                            font-weight: bold;
+                            position: absolute;
+                            opacity: 0.5;
+                            font-size: 0.8rem;
+                            right: calc(50% - ${ParentWidth / (GridColumns + 1) / 2}px);
+                          `}
+                        >
+                          {OrderX === 'ASC' ? j + 1 : GridColumns - j}
+                        </span>
+                      </div>
                     }
                     Value={0}
                     X={j}
                     Y={GridRows + 1}
                   />
                 ) : (
-                  <GridElement
-                    key={`${i}-${j}`}
-                    dataKey={
-                      data.find(
+                  <>
+                    {(() => {
+                      const itemData = data.find(
                         (d) =>
                           d.X === (OrderX === 'ASC' ? j : GridColumns - j - 1) &&
                           d.Y === (OrderY === 'ASC' ? i : GridRows - i - 1)
-                      )?.Key || ''
-                    }
-                    Text={
-                      data.find(
-                        (d) =>
-                          d.X === (OrderX === 'ASC' ? j : GridColumns - j - 1) &&
-                          d.Y === (OrderY === 'ASC' ? i : GridRows - i - 1)
-                      )?.Text || ''
-                    }
-                    Value={
-                      data.find(
-                        (d) =>
-                          d.X === (OrderX === 'ASC' ? j : GridColumns - j - 1) &&
-                          d.Y === (OrderY === 'ASC' ? i : GridRows - i - 1)
-                      )?.Value || null
-                    }
-                    X={
-                      data.find(
-                        (d) =>
-                          d.X === (OrderX === 'ASC' ? j : GridColumns - j - 1) &&
-                          d.Y === (OrderY === 'ASC' ? i : GridRows - i - 1)
-                      )?.X || 0
-                    }
-                    Y={
-                      data.find(
-                        (d) =>
-                          d.X === (OrderX === 'ASC' ? j : GridColumns - j - 1) &&
-                          d.Y === (OrderY === 'ASC' ? i : GridRows - i - 1)
-                      )?.Y || 0
-                    }
-                    isCircle={true}
-                    thresholds={thresholds}
-                    referenceDataUrl={referenceDataUrl}
-                  />
+                      );
+                      return (
+                        <GridElement
+                          key={`${i}-${j}`}
+                          dataKey={itemData?.Key || ''}
+                          Text={itemData?.Text || ''}
+                          Value={itemData?.Value || null}
+                          X={itemData?.X || 0}
+                          Y={itemData?.Y || 0}
+                          Rotate={itemData?.Rotate || '0'}
+                          isCircle={true}
+                          thresholds={thresholds}
+                          referenceDataUrl={referenceDataUrl}
+                        />
+                      );
+                    })()}
+                  </>
                 )}
               </>
             ))}

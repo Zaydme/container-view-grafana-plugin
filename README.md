@@ -10,6 +10,7 @@
 
    ```bash
    npm run dev
+   docker-compose up
    ```
 
 3. Build plugin in production mode
@@ -57,5 +58,6 @@ CREATE TABLE `product_data` (
    `Text` VARCHAR(128) NOT NULL,
    `X` INT NOT NULL,
    `Y` INT NOT NULL,
+   `Rotate` ENUM ('0', '90', '180', '270') NOT NULL DEFAULT '0',
 );
 ```
