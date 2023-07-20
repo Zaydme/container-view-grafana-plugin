@@ -148,8 +148,8 @@ export const Grid: React.FC<{
                           dataKey={itemData?.Key || ''}
                           Text={itemData?.Text || ''}
                           Value={itemData?.Value || null}
-                          X={itemData?.X || 0}
-                          Y={itemData?.Y || 0}
+                          X={itemData?.X || (OrderX === 'ASC' ? j : GridColumns - j - 1)}
+                          Y={itemData?.Y || (OrderY === 'ASC' ? i : GridRows - i - 1)}
                           Rotate={Rotate || '0'}
                           isCircle={true}
                           thresholds={thresholds}

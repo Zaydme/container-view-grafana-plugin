@@ -24,8 +24,21 @@ export const GridElement: React.FC<{
     return threshold?.color || '#fff';
   };
 
+  const ConditionalTooltip = ({ children, condition }: { children: JSX.Element; condition: boolean }) => {
+    return condition ? (
+      <Tooltip
+        interactive={true}
+        content={`key: (${dataKey}) value: (${Value}) text: (${Text}) coordinates: (x: ${X}, y: ${Y}) `}
+      >
+        {children}
+      </Tooltip>
+    ) : (
+      <>{children}</>
+    );
+  };
+
   return (
-    <Tooltip content={`key: ${dataKey} value: (${Value}) text: "${Text}" x: ${X} y: ${Y} rotation: ${Rotate}deg`}>
+    <ConditionalTooltip condition={isCircle === true && (dataKey || '').length > 0}>
       <span
         className={css`
           position: relative;
@@ -77,6 +90,6 @@ export const GridElement: React.FC<{
       >
         {Text}
       </span>
-    </Tooltip>
+    </ConditionalTooltip>
   );
 };
