@@ -50,6 +50,7 @@ CREATE TABLE `container_config` (
    `OrderY` ENUM ('ASC', 'DESC') NOT NULL DEFAULT 'ASC',
    `Width` INT NOT NULL DEFAULT 7,
    `Height` INT NOT NULL DEFAULT 5,
+   `Rotate` ENUM ('0', '90', '180', '270') NOT NULL DEFAULT '0',
 );
 
 CREATE TABLE `product_data` (
@@ -58,6 +59,5 @@ CREATE TABLE `product_data` (
    `Text` VARCHAR(128) NOT NULL,
    `X` INT NOT NULL,
    `Y` INT NOT NULL,
-   `Rotate` ENUM ('0', '90', '180', '270') NOT NULL DEFAULT '0',
 );
 ```

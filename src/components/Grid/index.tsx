@@ -1,5 +1,5 @@
 import React from 'react';
-import { ProductData, Threshold } from 'types';
+import { ProductData, Threshold, Rotation, Order } from 'types';
 import { css } from '@emotion/css';
 import { GridElement } from './GridElement';
 
@@ -8,23 +8,60 @@ export const Grid: React.FC<{
   ParentHeight: number;
   GridColumns: number;
   GridRows: number;
-  OrderX: 'ASC' | 'DESC';
-  OrderY: 'ASC' | 'DESC';
+  OrderX: Order;
+  OrderY: Order;
+  Rotate: Rotation;
   data: ProductData[];
   thresholds: Threshold[];
   referenceDataUrl: string;
-}> = ({ ParentWidth, ParentHeight, GridColumns, GridRows, OrderX, OrderY, data, thresholds, referenceDataUrl }) => {
+}> = ({
+  ParentWidth,
+  ParentHeight,
+  GridColumns,
+  GridRows,
+  OrderX,
+  OrderY,
+  Rotate,
+  data,
+  thresholds,
+  referenceDataUrl,
+}) => {
   return (
     <>
       <div
         className={css`
           display: grid;
-          grid-template-columns: repeat(${GridColumns + 1}, ${(ParentWidth - 15) / (GridColumns + 1)}px);
-          grid-template-rows: repeat(${GridRows + 1}, ${(ParentHeight - 15) / (GridRows + 1)}px);
+          grid-template-columns: repeat(
+            ${GridColumns + 1},
+            ${((['90', '270'].includes(Rotate) ? ParentHeight : ParentWidth) - 15) / (GridColumns + 1)}px
+          );
+          grid-template-rows: repeat(
+            ${GridRows + 1},
+            ${((['90', '270'].includes(Rotate) ? ParentWidth : ParentHeight) - 15) / (GridRows + 1)}px
+          );
           justify-items: center;
           align-items: center;
           width: calc(100% - 15px);
           max-height: 100%;
+          ${Rotate === '90' &&
+          `
+          transform: rotate(${Rotate}deg) translateY(${Math.min(-((ParentWidth / ParentHeight) * 100), -100)}%)
+          translateX(${ParentHeight / ParentWidth}%);
+          transform-origin: top left;
+          `}
+          ${Rotate === '180' &&
+          `
+          transform: rotate(${Rotate}deg) translateY(-100%)
+          translateX(-100%);
+          transform-origin: top left;
+          width: 100%;
+          `}
+          ${Rotate === '270' &&
+          `
+          width: 100%;
+          transform: rotate(${Rotate}deg) translateY(0%) translateX(${-((ParentHeight / ParentWidth) * 100)}%);
+          transform-origin: top left;
+          `}
         `}
       >
         {new Array(GridRows + 1).fill(0).map((_, i) => (
@@ -48,6 +85,7 @@ export const Grid: React.FC<{
                   </span>
                 }
                 Value={0}
+                Rotate={Rotate}
                 X={0}
                 Y={i + 1}
               />
@@ -58,15 +96,19 @@ export const Grid: React.FC<{
                   <GridElement
                     forceShift
                     Text={
-                      <div>
+                      <div
+                        className={css`
+                          display: flex;
+                          flex-direction: row;
+                        `}
+                      >
                         <span
                           className={css`
                             font-weight: bold;
                           `}
                         >
-                          X
+                          X <sub>{OrderX === 'ASC' ? j + 1 : GridColumns - j}</sub>
                         </span>
-                        <sub>{OrderX === 'ASC' ? j + 1 : GridColumns - j}</sub>
 
                         <span
                           className={css`
@@ -74,7 +116,13 @@ export const Grid: React.FC<{
                             position: absolute;
                             opacity: 0.5;
                             font-size: 0.8rem;
-                            right: calc(50% - ${ParentWidth / (GridColumns + 1) / 2}px);
+                            /* right: calc(50% - ${ParentWidth / (GridColumns + 1) / 2}px);*/
+                            right: calc(
+                              50% -
+                                ${((['90', '270'].includes(Rotate) ? ParentHeight : ParentWidth) - 15) /
+                                (GridColumns + 1) /
+                                2}px
+                            );
                           `}
                         >
                           {OrderX === 'ASC' ? j + 1 : GridColumns - j}
@@ -82,6 +130,7 @@ export const Grid: React.FC<{
                       </div>
                     }
                     Value={0}
+                    Rotate={Rotate}
                     X={j}
                     Y={GridRows + 1}
                   />
@@ -101,10 +150,14 @@ export const Grid: React.FC<{
                           Value={itemData?.Value || null}
                           X={itemData?.X || 0}
                           Y={itemData?.Y || 0}
-                          Rotate={itemData?.Rotate || '0'}
+                          Rotate={Rotate || '0'}
                           isCircle={true}
                           thresholds={thresholds}
                           referenceDataUrl={referenceDataUrl}
+                          maxWidth={Math.min(
+                            ((['90', '270'].includes(Rotate) ? ParentHeight : ParentWidth) - 15) / (GridColumns + 1),
+                            ((['90', '270'].includes(Rotate) ? ParentWidth : ParentHeight) - 15) / (GridRows + 1)
+                          )}
                         />
                       );
                     })()}

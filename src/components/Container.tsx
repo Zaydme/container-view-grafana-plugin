@@ -38,7 +38,6 @@ export const Container: React.FC<Props> = ({ options, data, width, height }) => 
       Text: productData.Text[i],
       X: x,
       Y: productData.Y[i],
-      Rotate: productData.Rotate[i],
     };
   });
 
@@ -51,7 +50,6 @@ export const Container: React.FC<Props> = ({ options, data, width, height }) => 
         css`
           width: 100%;
           height: 100%;
-          padding-right: 0.5rem;
         `
       )}
     >
@@ -71,6 +69,7 @@ export const Container: React.FC<Props> = ({ options, data, width, height }) => 
         GridRows={containerConfig.Height}
         OrderX={containerConfig.OrderX}
         OrderY={containerConfig.OrderY}
+        Rotate={containerConfig.Rotate}
         data={productData2D}
         thresholds={thresholds}
         referenceDataUrl={referenceDataUrl}
