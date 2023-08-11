@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { PanelProps } from '@grafana/data';
 import { PluginOptions, ContainerConfig, ProductData } from 'types';
 import { css, cx } from '@emotion/css';
@@ -12,34 +12,41 @@ export const Container: React.FC<Props> = ({ options, data, width, height }) => 
   const thresholds = options.thresholds;
   const referenceDataUrl = options.referenceDataUrl;
 
-  const containerConfig: ContainerConfig = (
-    data.series.find((s) => s.refId === containerConfigQueryRefId) as any
-  ).fields.reduce((acc: any, cur: any) => {
-    acc[cur.name] = cur.values.get(0);
-    return acc;
-  }, {});
+  const containerConfig: ContainerConfig = useMemo(
+    () =>
+      (data.series.find((s) => s.refId === containerConfigQueryRefId) as any).fields.reduce((acc: any, cur: any) => {
+        acc[cur.name] = cur.values.get(0);
+        return acc;
+      }, {}) as ContainerConfig,
+    [data, containerConfigQueryRefId]
+  );
 
-  const productData = (data.series.find((s) => s.refId === productDataQueryRefId) as any).fields.reduce(
-    (acc: any, cur: any) => {
-      acc[cur.name] = cur.values.toArray();
-      return acc;
-    },
-    {}
+  const productData = useMemo(
+    () =>
+      (data.series.find((s) => s.refId === productDataQueryRefId) as any).fields.reduce((acc: any, cur: any) => {
+        acc[cur.name] = cur.values.toArray();
+        return acc;
+      }, {}),
+    [data, productDataQueryRefId]
   );
 
   // now we have
   // productData = {Key: Array(42), Value: Array(42), Text: Array(42), X: Array(42), Y: Array(42)}
   // map them in a single array and we will use X and Y as indexes
 
-  const productData2D: ProductData[] = productData.X.map((x: number, i: number) => {
-    return {
-      Key: productData.Key[i],
-      Value: productData.Value[i],
-      Text: productData.Text[i],
-      X: x,
-      Y: productData.Y[i],
-    };
-  });
+  const productData2D: ProductData[] = useMemo(
+    () =>
+      productData.X.map((x: number, i: number) => {
+        return {
+          Key: productData.Key[i],
+          Value: productData.Value[i],
+          Text: productData.Text[i],
+          X: x,
+          Y: productData.Y[i],
+        };
+      }) as ProductData[],
+    [productData]
+  );
 
   // now we have
   // productData2D = [{Key: 1, Value: 1, Text: "1", X: 1, Y: 1}, {Key: 2, Value: 2, Text: "2", X: 2, Y: 1}, ...]
